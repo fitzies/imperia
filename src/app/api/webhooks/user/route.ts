@@ -1,55 +1,35 @@
-import { prisma } from "@/lib/db";
-import { IncomingHttpHeaders } from "http";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
-import { Webhook, WebhookRequiredHeaders } from "svix";
+import type { WebhookEvent } from "@clerk/clerk-sdk-node";
+import { Webhook } from "svix";
+import { buffer } from "micro";
+import { NextRequest, NextResponse } from "next/server";
 
-const webhookSecret = process.env.WEBHOOK_SECRET || "";
-
-async function handler(request: Request) {
-  const payload = await request.json();
-  const headersList = headers();
-  const heads = {
-    "svix-id": headersList.get("svix-id"),
-    "svix-timestamp": headersList.get("svix-timestamp"),
-    "svix-signature": headersList.get("svix-signature"),
-  };
-  const wh = new Webhook(webhookSecret);
-  let evt: Event | null = null;
-
-  try {
-    evt = wh.verify(
-      JSON.stringify(payload),
-      heads as IncomingHttpHeaders & WebhookRequiredHeaders
-    ) as Event;
-  } catch (err) {
-    console.error((err as Error).message);
-    return NextResponse.json({}, { status: 400 });
-  }
-
-  const eventType: EventType = evt.type;
-  if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, ...attributes } = evt.data;
-
-    await prisma.user.upsert({
-      where: { externalId: id as string },
-      create: {
-        externalId: id as string,
-        attributes,
-      },
-      update: { attributes },
-    });
-  }
-}
-
-type EventType = "user.created" | "user.updated" | "*";
-
-type Event = {
-  data: Record<string, string | number>;
-  object: "event";
-  type: EventType;
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
 
-export const GET = handler;
-export const POST = handler;
-export const PUT = handler;
+const secret = "whsec_d68QWTo64dQyP97L++bkQ5qJaCbASlR0";
+
+async function handler(req: Request, res: Response) {
+  //@ts-ignore
+  const payload = (await buffer(req)).toString();
+  const headers = req.headers;
+
+  const wh = new Webhook(secret);
+  let msg;
+  try {
+    //@ts-ignore
+    msg = wh.verify(payload, headers);
+    return NextResponse.json({ msg });
+  } catch (err) {
+    // res.status(400).json({});
+    return NextResponse.json({ err });
+  }
+
+  // Do something with the message...
+
+  // res.json({});
+}
+
+export { handler as POST, handler as GET, handler as PUT, handler as handler };
