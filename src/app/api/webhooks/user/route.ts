@@ -1,5 +1,9 @@
+import { IncomingHttpHeaders } from "http";
 import { headers } from "next/headers";
-import { Webhook } from "svix";
+import { NextResponse } from "next/server";
+import { Webhook, WebhookRequiredHeaders } from "svix";
+
+const webhookSecret = process.env.WEBHOOK_SECRET || "";
 
 async function handler(request: Request) {
   const payload = await request.json();
@@ -10,8 +14,34 @@ async function handler(request: Request) {
     "svix-signature": headersList.get("svix-signature"),
   };
 
-  // const wh = new Webhook(JSON.stringify(payload), heads);
+  const wh = new Webhook(webhookSecret);
+  let evt: Event | null = null;
+
+  try {
+    evt = wh.verify(
+      JSON.stringify(payload),
+      heads as IncomingHttpHeaders & WebhookRequiredHeaders
+    ) as Event;
+  } catch (error) {
+    console.error((error as Error).message);
+    return NextResponse.json({}, { status: 400 });
+  }
+
+  const eventType: EventType = evt.type;
+  if (eventType === "user.created" || eventType === "user.updated") {
+    const { id, ...attributes } = evt.data;
+    console.log(id);
+    console.log(attributes);
+  }
 }
+
+type EventType = "user.created" | "user.updated" | "*";
+
+type Event = {
+  data: Record<string, string | number>;
+  object: "event";
+  type: EventType;
+};
 
 export const GET = handler;
 export const POST = handler;
