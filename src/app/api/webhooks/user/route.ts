@@ -3,8 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook, WebhookRequiredHeaders } from "svix";
 
-const webhookSecret =
-  process.env.WEBHOOK_SECRET || "whsec_rFKZ3YU7JzQvq39C1lX6KpIo7hynp8Rl";
+const webhookSecret = process.env.WEBHOOK_SECRET || "";
 
 async function handler(request: Request) {
   const payload = await request.json();
@@ -30,9 +29,9 @@ async function handler(request: Request) {
 
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, ...attributes } = evt.data;
+    const { id, firstName, emailAddress } = evt.data;
     console.log(id);
-    console.log(attributes);
+    console.log(emailAddress, firstName);
   }
 }
 
