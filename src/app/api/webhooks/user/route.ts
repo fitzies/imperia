@@ -3,7 +3,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook, WebhookRequiredHeaders } from "svix";
 
-const webhookSecret = process.env.WEBHOOK_SECRET || "";
+const webhookSecret =
+  process.env.WEBHOOK_SECRET || "whsec_rFKZ3YU7JzQvq39C1lX6KpIo7hynp8Rl";
 
 async function handler(request: Request) {
   const payload = await request.json();
