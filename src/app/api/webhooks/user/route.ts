@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/db";
 import { IncomingHttpHeaders } from "http";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -29,10 +30,11 @@ async function handler(request: Request) {
 
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, firstName, emailAddress } = evt.data;
-    console.log(id);
-    console.log(emailAddress, firstName);
+    const { id, ...all } = evt.data;
+    console.log(all);
   }
+
+  // await prisma.user.upsert({})
 }
 
 type EventType = "user.created" | "user.updated" | "*";
