@@ -33,6 +33,7 @@ async function handler(request: Request) {
     const { id, ...attributes } = evt.data;
     console.log(attributes);
     console.log(attributes.email_addresses);
+    console.log(attributes.email_addresses[0]);
   }
 
   // await prisma.user.upsert({})
