@@ -77,34 +77,25 @@ export async function POST(req) {
     console.log("doing something");
   }
 
-  console.log(email_addresses[0].email_address);
-  console.log(first_name);
+  const email_address: string = email_addresses[0].email_address;
+  const name: string = first_name;
 
-  if (!first_name || !email_addresses[0].email_address) {
-    await prisma.user.upsert({
-      where: { externalId: id },
-      create: {
-        externalId: id,
-      },
-      update: { externalId: id },
+  console.log(email_address, name);
+
+  let user = await prisma.user.findFirst({ where: { externalId: id } });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: { externalId: id, email: email_address, name: name },
     });
-  } else {
-    await prisma.user.upsert({
+  } else if (user) {
+    user = await prisma.user.update({
       where: { externalId: id },
-      create: {
-        externalId: id,
-        email: email_addresses[0].email_address,
-        name: first_name,
-      },
-      update: { externalId: id, email: email_addresses, name: first_name },
+      data: { email: email_address, name: name },
     });
   }
 
-  console.log(
-    `User ${id} with email: ${email_addresses} and name: ${first_name} was ${eventType}`
-  );
-
-  return new Response("", {
+  return new Response(user, {
     status: 201,
   });
 }
