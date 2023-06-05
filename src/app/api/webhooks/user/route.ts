@@ -77,15 +77,17 @@ export async function POST(req) {
     console.log("doing something");
   }
 
-  await prisma.user.upsert({
-    where: { externalId: id },
-    create: { externalId: id, email: email_addresses, name: first_name },
-    update: { email: email_addresses, name: first_name },
-  });
+  // await prisma.user.upsert({
+  //   where: { externalId: id },
+  //   create: { externalId: id, email: email_addresses, name: first_name },
+  //   update: { email: email_addresses, name: first_name },
+  // });
 
-  console.log(
-    `User ${id} with email: ${email_addresses} and name: ${first_name} was ${eventType}`
-  );
+  // console.log(
+  //   `User ${id} with email: ${email_addresses} and name: ${first_name} was ${eventType}`
+  // );
+
+  console.log(email_addresses[1]);
 
   return new Response("", {
     status: 201,
