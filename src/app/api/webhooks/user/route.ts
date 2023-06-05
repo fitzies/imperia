@@ -30,8 +30,8 @@ async function handler(request: Request) {
 
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, ...all } = evt.data;
-    console.log(all);
+    // const { id, ...all } = evt.data;
+    console.log(evt.data);
   }
 
   // await prisma.user.upsert({})
