@@ -15,7 +15,8 @@ model User {
   id    Int     @id @default(autoincrement())
   
   externalId String @unique
-  attributes Json 
+  email String
+  name String 
   
   agents Agent[]
 }

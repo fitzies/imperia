@@ -3,6 +3,7 @@
 import type { User } from "@clerk/nextjs/api";
 import { Webhook } from "svix";
 import { headers } from "next/headers";
+import { prisma } from "@/lib/db";
 
 type UnwantedKeys =
   | "emailAddresses"
@@ -60,7 +61,7 @@ export async function POST(req) {
       status: 400,
     });
   }
-  const { id } = evt.data;
+  const { id, email_addresses, first_name } = evt.data;
   // Handle the webhook
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
@@ -75,7 +76,17 @@ export async function POST(req) {
     }
     console.log("doing something");
   }
-  console.log(`User ${id} was ${eventType}`);
+
+  await prisma.user.upsert({
+    where: { externalId: id },
+    create: { externalId: id, email: email_addresses, name: first_name },
+    update: { email: email_addresses, name: first_name },
+  });
+
+  console.log(
+    `User ${id} with email: ${email_addresses} and name: ${first_name} was ${eventType}`
+  );
+
   return new Response("", {
     status: 201,
   });
