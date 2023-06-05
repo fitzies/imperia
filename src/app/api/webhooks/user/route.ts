@@ -14,7 +14,6 @@ async function handler(request: Request) {
     "svix-timestamp": headersList.get("svix-timestamp"),
     "svix-signature": headersList.get("svix-signature"),
   };
-
   const wh = new Webhook(webhookSecret);
   let evt: Event | null = null;
 
@@ -31,10 +30,14 @@ async function handler(request: Request) {
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, ...attributes } = evt.data;
+
     await prisma.user.upsert({
       where: { externalId: id as string },
-      create: { externalId: id as string, attributes: attributes },
-      update: { attributes: attributes },
+      create: {
+        externalId: id as string,
+        attributes,
+      },
+      update: { attributes },
     });
   }
 }
