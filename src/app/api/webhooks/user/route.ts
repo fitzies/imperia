@@ -23,15 +23,15 @@ async function handler(request: Request) {
       JSON.stringify(payload),
       heads as IncomingHttpHeaders & WebhookRequiredHeaders
     ) as Event;
-  } catch (error) {
-    console.error((error as Error).message);
+  } catch (err) {
+    console.error((err as Error).message);
     return NextResponse.json({}, { status: 400 });
   }
 
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
-    // const { id, ...all } = evt.data;
-    console.log(evt.data);
+    const { id, ...attributes } = evt.data;
+    console.log(attributes.email_addresses);
   }
 
   // await prisma.user.upsert({})
