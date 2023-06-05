@@ -3,11 +3,11 @@ import { Webhook } from "svix";
 import { buffer } from "micro";
 import { NextRequest, NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 const secret = "whsec_d68QWTo64dQyP97L++bkQ5qJaCbASlR0";
 
