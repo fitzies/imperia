@@ -32,4 +32,4 @@ async function handler(req: Request, res: Response) {
   // res.json({});
 }
 
-export { handler as POST, handler as GET, handler as PUT, handler as handler };
+export { handler as POST, handler as GET, handler as PUT };
