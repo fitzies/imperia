@@ -10,7 +10,7 @@ async function handler(request: Request) {
     "svix-signature": headersList.get("svix-signature"),
   };
 
-  const wh = new Webhook(JSON.stringify(payload), heads);
+  // const wh = new Webhook(JSON.stringify(payload), heads);
 }
 
 export const GET = handler;
