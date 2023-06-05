@@ -13,10 +13,10 @@ datasource db {
 
 model User {
   id    Int     @id @default(autoincrement())
+  
   externalId String @unique
-
-  email String  @unique
-  name  String?
+  attributes Json 
+  
   agents Agent[]
 }
 

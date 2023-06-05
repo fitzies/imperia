@@ -31,18 +31,18 @@ async function handler(request: Request) {
   const eventType: EventType = evt.type;
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, ...attributes } = evt.data;
-    console.log(attributes);
-    console.log(attributes.email_addresses);
-    console.log(attributes.email_addresses[0]);
+    await prisma.user.upsert({
+      where: { externalId: id as string },
+      create: { externalId: id as string, attributes: attributes },
+      update: { attributes: attributes },
+    });
   }
-
-  // await prisma.user.upsert({})
 }
 
 type EventType = "user.created" | "user.updated" | "*";
 
 type Event = {
-  data: Record<string, string | number | any[]>;
+  data: Record<string, string | number>;
   object: "event";
   type: EventType;
 };
